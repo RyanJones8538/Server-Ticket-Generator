@@ -1,0 +1,24 @@
+{
+  "server_id": "server-d3",
+  "cluster": "D",
+  "hostname": "server-d3",
+  "app_status": "degraded",
+  "message": "I am a cluster D server!",
+  "nginx": {
+    "installed": true,
+    "version": "1.26.2",
+    "status": "running"
+  },
+  "ports": {
+    "http": 80
+  },
+  "app_port_open": true,
+  "resources": {
+    "cpu_usage_percent": 34.7,
+    "memory_usage_percent": 58.4
+  },
+  "diagnostics_config": {
+    "upstream_timeout_seconds": 2,
+    "keepalive_connections": 0
+  }
+}

@@ -1,0 +1,19 @@
+{
+    "expected_nginx_version": "1.26.2",
+    "expected_nginx_status": "running",
+    "expected_app_status": "ok",
+    "clusters": {
+        "A": {
+            "expected_message": "I am a cluster A server!"
+        },
+        "B": {
+            "expected_message": "I am a cluster B server!"
+        },
+        "C": {
+            "expected_message": "I am a cluster C server!"
+        },
+        "D": {
+            "expected_message": "I am a cluster D server!"
+        }
+    }
+}

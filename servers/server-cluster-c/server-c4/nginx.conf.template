@@ -1,0 +1,19 @@
+upstream app_backend {
+    server 127.0.0.1:3000;
+}
+
+server {
+    listen 80;
+    server_name _;
+    default_type application/json;
+
+    location /status {
+        return 200 '{"server_id":"${SERVER_ID}","cluster":"${CLUSTER}","hostname":"$hostname","app_status":"ok","message":"${MESSAGE}","nginx":{"version":"$nginx_version","status":"running"},"ports":{"http":80}}';
+    }
+
+    location /app {
+        proxy_pass http://app_backend;
+        proxy_connect_timeout 5s;
+        proxy_read_timeout 5s;
+    }
+}

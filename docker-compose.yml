@@ -1,0 +1,216 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    volumes:
+      - ./servers:/app/servers:ro
+      - ./config:/app/config:ro
+      - ./tickets:/app/tickets:ro
+      - logs-c1:/app/logs/server-c1:ro
+      - logs-c2:/app/logs/server-c2:ro
+      - logs-c3:/app/logs/server-c3:ro
+      - logs-c4:/app/logs/server-c4:ro
+
+  # database:                       # add your DB service here
+  #   image: postgres:16-alpine
+  #   ...
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:80"
+    depends_on:
+      - api
+
+  # ── Cluster A ─────────────────────────────────────────────────────────────────
+  server-a1:
+    image: nginx:1.26.2-alpine
+    container_name: server-a1
+    hostname: server-a1
+    environment:
+      SERVER_ID: server-a1
+      CLUSTER: A
+      MESSAGE: "I am a cluster A server!"
+    volumes:
+      - ./servers/nginx.conf.template:/etc/nginx/templates/default.conf.template:ro
+    ports:
+      - "8081:80"
+    labels:
+      cluster: cluster-a
+      server-id: server-a1
+      nginx-status: running
+
+  server-a2:
+    image: nginx:1.24.0-alpine
+    container_name: server-a2
+    hostname: server-a2
+    environment:
+      SERVER_ID: server-a2
+      CLUSTER: A
+      MESSAGE: "I am a cluster A server!"
+    volumes:
+      - ./servers/nginx.conf.template:/etc/nginx/templates/default.conf.template:ro
+    ports:
+      - "8082:80"
+    labels:
+      cluster: cluster-a
+      server-id: server-a2
+      nginx-status: running
+
+  server-a3:
+    image: nginx:1.24.0-alpine
+    container_name: server-a3
+    hostname: server-a3
+    environment:
+      SERVER_ID: server-a3
+      CLUSTER: A
+      MESSAGE: "I am a cluster A server!"
+    volumes:
+      - ./servers/nginx.conf.template:/etc/nginx/templates/default.conf.template:ro
+    ports:
+      - "8083:80"
+    labels:
+      cluster: cluster-a
+      server-id: server-a3
+      nginx-status: running
+
+  # ── Cluster B ─────────────────────────────────────────────────────────────────
+  server-b1:
+    image: nginx:1.26.2-alpine
+    container_name: server-b1
+    hostname: server-b1
+    environment:
+      SERVER_ID: server-b1
+      CLUSTER: B
+      MESSAGE: "I am a cluster B server!"
+    command: ["tail", "-f", "/dev/null"]
+    volumes:
+      - ./servers/nginx.conf.template:/etc/nginx/templates/default.conf.template:ro
+    labels:
+      cluster: cluster-b
+      server-id: server-b1
+      nginx-status: stopped
+
+  server-b2:
+    image: nginx:1.26.2-alpine
+    container_name: server-b2
+    hostname: server-b2
+    environment:
+      SERVER_ID: server-b2
+      CLUSTER: B
+      MESSAGE: "I am a cluster B server!"
+    command: ["tail", "-f", "/dev/null"]
+    volumes:
+      - ./servers/nginx.conf.template:/etc/nginx/templates/default.conf.template:ro
+    labels:
+      cluster: cluster-b
+      server-id: server-b2
+      nginx-status: stopped
+
+  server-b3:
+    image: nginx:1.26.2-alpine
+    container_name: server-b3
+    hostname: server-b3
+    environment:
+      SERVER_ID: server-b3
+      CLUSTER: B
+      MESSAGE: "I am a cluster B server!"
+    volumes:
+      - ./servers/nginx.conf.template:/etc/nginx/templates/default.conf.template:ro
+    ports:
+      - "8093:80"
+    labels:
+      cluster: cluster-b
+      server-id: server-b3
+      nginx-status: running
+
+  # ── Cluster C ─────────────────────────────────────────────────────────────────
+  server-c1:
+    image: nginx:1.26.2-alpine
+    container_name: server-c1
+    hostname: server-c1
+    environment:
+      SERVER_ID: server-c1
+      CLUSTER: C
+      MESSAGE: "I am a cluster C server!"
+    entrypoint: ["/bin/sh", "/scripts/entrypoint.sh"]
+    volumes:
+      - ./servers/nginx.conf.template:/etc/nginx/templates/default.conf.template:ro
+      - ./servers/server-cluster-c/server-c1/entrypoint.sh:/scripts/entrypoint.sh:ro
+      - logs-c1:/var/log/nginx
+    ports:
+      - "8101:80"
+    labels:
+      cluster: cluster-c
+      server-id: server-c1
+      issue: corrupted-config
+
+  server-c2:
+    image: nginx:1.26.2-alpine
+    container_name: server-c2
+    hostname: server-c2
+    environment:
+      SERVER_ID: server-c2
+      CLUSTER: C
+      MESSAGE: "I am a cluster C server!"
+    entrypoint: ["/bin/sh", "/scripts/entrypoint.sh"]
+    volumes:
+      - ./servers/server-cluster-c/server-c2/entrypoint.sh:/scripts/entrypoint.sh:ro
+      - logs-c2:/var/log/nginx
+    ports:
+      - "8102:80"
+    labels:
+      cluster: cluster-c
+      server-id: server-c2
+      issue: upstream-errors
+
+  server-c3:
+    image: nginx:1.26.2-alpine
+    container_name: server-c3
+    hostname: server-c3
+    environment:
+      SERVER_ID: server-c3
+      CLUSTER: C
+      MESSAGE: "I am a cluster C server!"
+    entrypoint: ["/bin/sh", "/scripts/entrypoint.sh"]
+    volumes:
+      - ./servers/nginx.conf.template:/etc/nginx/templates/default.conf.template:ro
+      - ./servers/server-cluster-c/server-c3/entrypoint.sh:/scripts/entrypoint.sh:ro
+      - logs-c3:/var/log/nginx
+    ports:
+      - "8103:80"
+    labels:
+      cluster: cluster-c
+      server-id: server-c3
+      issue: worker-crash-loop
+
+  server-c4:
+    image: nginx:1.26.2-alpine
+    container_name: server-c4
+    hostname: server-c4
+    environment:
+      SERVER_ID: server-c4
+      CLUSTER: C
+      MESSAGE: "I am a cluster C server!"
+    volumes:
+      - ./servers/server-cluster-c/server-c4/nginx.conf.template:/etc/nginx/templates/default.conf.template:ro
+      - logs-c4:/var/log/nginx
+    ports:
+      - "8104:80"
+    labels:
+      cluster: cluster-c
+      server-id: server-c4
+      issue: bad-proxy-pass
+
+volumes:
+  logs-c1:
+  logs-c2:
+  logs-c3:
+  logs-c4:

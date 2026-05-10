@@ -1,0 +1,10 @@
+rapidfuzz
+langchain-openai
+langchain-core
+langgraph
+pydantic
+pydantic-settings
+python-dotenv
+fastapi
+uvicorn[standard]
+httpx

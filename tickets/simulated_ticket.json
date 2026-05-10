@@ -1,0 +1,20 @@
+[
+    {
+        "ticket_id": "1",
+        "cluster": "A",
+        "issue": "Nginx version set to 1.24.0 when it should be 1.26.2.",
+        "description": "There is an nginx version mismatch. Nginx version should be 1.26.2, but it is set to 1.24.0.",
+        "affected_servers": ["server-a2", "server-a3"],
+        "severity": 3,
+        "remediation": "Update to correct version."
+    },
+    {
+        "ticket_id": "2",
+        "cluster": "B",
+        "issue": "Nginx version set to 1.24.0 when it should be 1.26.2.",
+        "description": "There is an nginx version mismatch. Nginx version should be 1.26.2, but it is set to 1.24.0.",
+        "affected_servers": ["server-b2", "server-b3"],
+        "severity": 3,
+        "remediation": "Update to correct version."
+    }
+]

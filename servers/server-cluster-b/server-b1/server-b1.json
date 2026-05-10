@@ -1,0 +1,24 @@
+{
+  "server_id": "server-b1",
+  "cluster": "B",
+  "hostname": "mock-b1.local",
+  "app_status": "ok",
+  "message": "I am a cluster B server!",
+  "nginx": {
+    "installed": true,
+    "version": "1.26.2",
+    "status": "stopped"
+  },
+  "ports": {
+    "http": 8091
+  },
+  "app_port_open": true,
+  "resources": {
+    "cpu_usage_percent": 6.3,
+    "memory_usage_percent": 37.2
+  },
+  "diagnostics_config": {
+    "upstream_timeout_seconds": 60,
+    "keepalive_connections": 32
+  }
+}

@@ -1,0 +1,9 @@
+server {
+    listen 80;
+    server_name _;
+    default_type application/json;
+
+    location /status {
+        return 200 '{"server_id":"${SERVER_ID}","cluster":"${CLUSTER}","hostname":"$hostname","app_status":"ok","message":"${MESSAGE}","nginx":{"version":"$nginx_version","status":"running"},"ports":{"http":80}}';
+    }
+}

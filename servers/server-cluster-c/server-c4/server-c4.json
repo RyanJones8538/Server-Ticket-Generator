@@ -1,0 +1,24 @@
+{
+  "server_id": "server-c4",
+  "cluster": "C",
+  "hostname": "server-c4",
+  "app_status": "ok",
+  "message": "I am a cluster C server!",
+  "nginx": {
+    "installed": true,
+    "version": "1.26.2",
+    "status": "running"
+  },
+  "ports": {
+    "http": 8104
+  },
+  "app_port_open": true,
+  "resources": {
+    "cpu_usage_percent": 19.3,
+    "memory_usage_percent": 50.2
+  },
+  "diagnostics_config": {
+    "upstream_timeout_seconds": 60,
+    "keepalive_connections": 32
+  }
+}

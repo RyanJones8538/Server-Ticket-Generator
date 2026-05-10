@@ -1,0 +1,24 @@
+{
+  "server_id": "server-d1",
+  "cluster": "D",
+  "hostname": "server-d1",
+  "app_status": "error",
+  "message": "I am a cluster D server!",
+  "nginx": {
+    "installed": true,
+    "version": "1.26.2",
+    "status": "running"
+  },
+  "ports": {
+    "http": 80
+  },
+  "app_port_open": false,
+  "resources": {
+    "cpu_usage_percent": 4.2,
+    "memory_usage_percent": 38.1
+  },
+  "diagnostics_config": {
+    "upstream_timeout_seconds": 60,
+    "keepalive_connections": 32
+  }
+}

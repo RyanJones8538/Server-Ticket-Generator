@@ -1,0 +1,24 @@
+{
+  "server_id": "server-a3",
+  "cluster": "A",
+  "hostname": "mock-a3.local",
+  "app_status": "ok",
+  "message": "I am a cluster A server!",
+  "nginx": {
+    "installed": true,
+    "version": "1.24.0",
+    "status": "running"
+  },
+  "ports": {
+    "http": 8083
+  },
+  "app_port_open": true,
+  "resources": {
+    "cpu_usage_percent": 9.7,
+    "memory_usage_percent": 48.9
+  },
+  "diagnostics_config": {
+    "upstream_timeout_seconds": 60,
+    "keepalive_connections": 32
+  }
+}
