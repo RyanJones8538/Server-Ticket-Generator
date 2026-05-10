@@ -13,7 +13,12 @@ from app.state.graph_state import SearchIssuesOutput, SearchIssuesState
 
 @tool
 def read_only_shell(command: str) -> str:
-    """Run a read-only shell command. Useful for reading config files and scripts mounted at /app/servers/."""
+    """
+    Run a read-only shell command. Useful for reading config files and scripts mounted at /app/servers/.
+    Args:
+        command: The requested command.
+    Returns: The result of that command.
+    """
     if any(op in command for op in SHELL_OPERATORS):
         return "Piped or chained commands are not permitted."
     root = shlex.split(command)[0]
@@ -24,7 +29,15 @@ def read_only_shell(command: str) -> str:
 
 @tool
 def http_probe(server_id: str, path: str = "/app") -> str:
-    """Make a GET request to a named server container by its server_id (e.g. 'server-c1'). Returns HTTP status and response body. Use path='/status' or path='/app'."""
+    """
+    Make a GET request to a named server container by its server_id (e.g. 'server-c1'). 
+    Returns HTTP status and response body. Use path='/status' or path='/app'.
+    Args: 
+        server_id: id of relevant server.
+        path: path of server.
+    Returns:
+        Result of GET request.
+    """
     try:
         url = f"http://{server_id}{path}"
         response = httpx.get(url, timeout=5.0)
@@ -37,12 +50,24 @@ def route_search_issues(state):
     Routes to tools if the LLM made tool calls, otherwise ends the agent loop.
     The tool count limit is enforced in route_after_tools, after pending calls are executed,
     so we never leave unanswered tool_call_ids in the message history.
+    Args:
+        state: The state of the graph.
+    Returns:
+        Correct node to visit.
     """
     if tools_condition(state) == "tools":
         return "tools"
     return "issues_extractor"
 
 def route_after_tools(state):
+    """
+    Routes after tool calls given. If the max has not been reached, return result to LLM.
+    If it has, move on to the next node.
+    Args:
+        state: The state of the graph.
+    Returns: 
+        string corresponding to the next node to visit.
+    """
     messages = state.get("messages", [])
     tool_call_count = sum(1 for m in messages if m.type == "tool")
     if tool_call_count >= 5:
@@ -67,8 +92,22 @@ EXTRACTOR_PROMPT = HumanMessage(
 )
 
 def make_issues_extractor(llm):
+    """
+    Creates node to extract issues from LLM output.
+    Args:
+        llm: The llm used to perform the extraction.
+    Returns:
+        issues_extractor node.
+    """
     model = llm()
     def issues_extractor(state: SearchIssuesState):
+        """
+        Extracts issues from LLM output.
+        Args:
+            state: The state of the graph.
+        Returns:
+            issues: List of issues discovered.
+        """
         cluster_id = state["cluster_id"]
         messages = state["messages"]
         result = model.invoke(messages + [EXTRACTOR_PROMPT])
@@ -77,6 +116,14 @@ def make_issues_extractor(llm):
     return issues_extractor
 
 def collect_server_diagnostics(server_ids: list[str], cluster_id: str) -> dict:
+    """
+    Retrieves server diagnostics.
+    Args:
+        cluster_id: ID of cluster.
+        server_ids: List of relevant server_ids.
+    Returns:
+        data output
+    """
     cluster_dir = f"/app/servers/server-cluster-{cluster_id.lower()}"
     data = {}
     for server_id in server_ids:
@@ -125,6 +172,14 @@ def make_issues_agent(llm, tools):
     """
     llm_with_tools = llm().bind_tools(tools)
     def issues_agent(state: SearchIssuesState):
+        """
+        Searches a cluster of servers for issues. Can be used with or without a user-prompt.
+        Args: 
+            state: The state of the graph.
+        Returns:
+            messages: The output of the LLM.
+            status: The status of the graph.
+        """
         messages = state.get("messages", [])
 
         if not messages:

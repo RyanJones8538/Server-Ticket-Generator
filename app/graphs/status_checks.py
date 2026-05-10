@@ -11,7 +11,9 @@ from app.state.graph_state import StatusCheckState, StatusCheckStateOutput
 
 
 def build_status_checks() -> CompiledStateGraph:
-    """Builds status checks graph for ticket generator.
+    """
+    Builds status checks graph for ticket generator.
+    This graph runs basic, high-level diagnostics for future processing.
     Returns:
         status_checks graph.
     """

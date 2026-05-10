@@ -4,7 +4,23 @@ from app.models.models import AggregatedIssue
 from app.state.graph_state import DiagnosticsState
 
 def make_aggregate_issues(llm):
+    """
+    Wrapper function for aggregate_issues node, which takes a list of issues and affected servers and uses an LLM to coalesce identical issues across different servers.
+    Args:
+        llm: The language model used to evaluate the sources.
+    Returns:
+        aggregate_issues node.
+    """
     def aggregate_issues(state: DiagnosticsState)-> dict:
+        """
+        Creates the aggregate_issues node to aggregate separate issues into single tickets.
+        Args: 
+            state: The current state of the graph
+        Returns:
+            status: Status of the process
+            aggregate_issues_count: Number of separate issues discovered.
+            aggregate_issues: List of issues with affected servers.
+        """
         raw_issues = state["raw_issues"]
         cluster_id = state["cluster_id"]
 

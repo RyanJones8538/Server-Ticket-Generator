@@ -15,7 +15,7 @@ from pydantic import BaseModel
 
 load_dotenv()
 
-from app.graphs.main_graph import build_main_graph
+from app.graphs.standard_diagnostics_graph import build_standard_diagnostics_graph
 from app.graphs.audit_group.audit_group import build_audit_graph
 from app.models.models import IdealState, LLMDeduplicationResults, QueryJudgement
 from app.state.graph_state import MainState, AuditState
@@ -107,7 +107,7 @@ async def run_stream(cluster_id: str) -> AsyncGenerator[str, None]:
             }
 
             checkpointer = MemorySaver()
-            graph = build_main_graph(checkpointer)
+            graph = build_standard_diagnostics_graph(checkpointer)
 
             prev = {
                 "status": initial_state["status"],

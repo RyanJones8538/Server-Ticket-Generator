@@ -7,7 +7,17 @@ from app.paths import SERVERS_DIR
 from app.state.graph_state import CollectState
 
 
-def build_collect_server_states(state: CollectState) -> dict:
+def collect_server_states(state: CollectState) -> dict:
+    """
+    Collects states from servers, calling the actual server if possible, or reading from the file if not.
+    I read from the file because Cluster D involves excessive memory and CPU usage,
+    which I would prefer to not run on my computer.
+    Args:
+        state: The state of the graph.
+    Returns:
+        server_states: A list of the collected states of the servers.
+        status: The status of the graph
+    """
     cluster_id = state["cluster_id"]
     cluster_dir = SERVERS_DIR / f"server-cluster-{cluster_id.lower()}"
 

@@ -44,6 +44,7 @@ def route_after_deterministic(state: DeduplicateState):
 def build_deduplicate() -> CompiledStateGraph:
     """
     Builds deduplication subgraph for ticket generator.
+    This subgraph compares a list of potential issues with a list of existing issues, and removes those it deems duplicates.
     Returns:
         deduplicate subgraph.
     """

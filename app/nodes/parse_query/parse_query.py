@@ -17,7 +17,8 @@ def make_parse_query(llm):
         Args:
             state: graph_state
         Returns: 
-            A boolean determining the judgement, and a user-facing message explaining it.
+            query_judgement: A class with a bool containing the judgement on validity, and a string explaining the judgement.
+            status: The status of the graph.
         """
         query = state.get("query", "")
 

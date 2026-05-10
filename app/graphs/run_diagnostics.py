@@ -10,6 +10,10 @@ from app.state.graph_state import DiagnosticsState
 def dispatch_status_checks_by_server(state: DiagnosticsState):
     """
     Dispatches tasks to check status by server.
+    Args: 
+        state: State of the graph.
+    Returns:
+        result of the dispatches.
     """
     request_id = state["request_id"]
     server_states = state["server_states"]
@@ -29,6 +33,13 @@ def dispatch_status_checks_by_server(state: DiagnosticsState):
     return targets
 
 def dispatch_status_diagnostics_by_server(state: DiagnosticsState):
+    """
+    Dispatches servers with app_status outside ideal to a subgraph which will provide more specific diagnostics.
+    Args:
+        state: State of the graph.
+    Returns:
+        Results of the server dispatch.
+    """
     routing_flags = state.get("routing_flags", {})
     raw_issues = state.get("raw_issues", {})
 
@@ -59,6 +70,7 @@ def dispatch_status_diagnostics_by_server(state: DiagnosticsState):
 
 def build_run_diagnostics() -> CompiledStateGraph:
     """Builds diagnostics graph for ticket generator.
+    This graph runs typical, unit-test style diagnostics and records the results.
     Returns:
         run_diagnostics graph.
     """

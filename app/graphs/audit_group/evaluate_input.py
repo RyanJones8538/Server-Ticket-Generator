@@ -8,6 +8,13 @@ from app.state.graph_state import ParseState
 
 
 def route_query(state):
+    """
+    Routes the graph to a proper node depending on evaluation of query.
+    Args:
+        state: The state of the graph.
+    Returns: 
+        string corresponding to the next node to visit.
+    """
     query_judgement = state["query_judgement"]
 
     if query_judgement.is_valid:
@@ -15,6 +22,10 @@ def route_query(state):
     return "invalid"
 
 def build_evaluate_input() -> CompiledStateGraph:
+    """
+    Evaluates the user's input to determine validity as a valid query.
+    Asks for a new input until one is deemed valid.
+    """
     parse_graph = StateGraph(ParseState)
 
     parse_graph.add_node("parse_query", make_parse_query(parse_llm))

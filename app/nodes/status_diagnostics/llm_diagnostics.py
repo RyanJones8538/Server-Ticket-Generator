@@ -12,11 +12,12 @@ def make_evaluate_server(llm):
     """
     def evaluate_server(state: StatusDiagnosticsState):
         """
-        Parses the users's query for comprehensibility as a request, and for security purposes.
+        Searches a given server for issues if previous checks fail.
         Args:
-            state: graph_state
+            state: The state of the graph.
         Returns: 
-            A boolean determining the judgement, and a user-facing message explaining it.
+            raw_issues: Description of the issue and id of server containing it.
+            status: The status of the graph.
         """
         server = state.get("server")
         cluster = state.get("cluster_id")

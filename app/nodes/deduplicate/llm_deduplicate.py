@@ -16,9 +16,11 @@ def make_llm_deduplicate(llm):
         """
         Function to compare a set of AggregatedIssues against a record of existing help desk tickets to prevent duplicate issues being raised.
         Args:
-            state: DeduplicateState
+            state: The state of the graph.
         Returns: 
-            A list of entries, each containing the potential ticket, the LLM's duplicate evaluation, and the explanation for the decision.
+            post_llm_filter_issues: Issues that survive the LLM filter.
+            post_llm_filter_issues_count: Number of issues that survive the filter.
+            status: The status of the graph.
         """
         model = llm()
 

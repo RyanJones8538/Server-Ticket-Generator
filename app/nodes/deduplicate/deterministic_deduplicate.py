@@ -3,6 +3,15 @@ from rapidfuzz import fuzz
 
 
 def deterministic_deduplicate(state: DeduplicationEntry) -> dict:
+    """
+    Performs deduplication of potential tickets against existing tickets in a deterministic fashion.
+    Args:
+        state: The state of the graph.
+    Returns:
+        post_deterministic_filter_issues: List of issues that survive the filter
+        post_deterministic_filter_issues_count: Number of issues that survive the filter (aggregated through annotation)
+        status: The status of the graph.
+    """
     existing_tickets = state["existing_tickets"]
     affected_servers = state["candidate_ticket"]["affected_servers"]
     issue = state["candidate_ticket"]["issue"]

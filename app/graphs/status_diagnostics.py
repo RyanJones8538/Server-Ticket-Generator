@@ -8,6 +8,13 @@ from app.nodes.status_diagnostics.llm_diagnostics import make_evaluate_server
 from app.state.graph_state import StatusDiagnosticsState, StatusDiagnosticsStateOutput
 
 def route_after_memory(state: StatusDiagnosticsState):
+    """
+    Routes the graph to exit if an issue with memory has been found.
+    Args:
+        state: The state of the graph.
+    Returns:
+        String corresponding to the next node to enter.
+    """
     memory_issue_found = state.get("memory_issue_found")
 
     if memory_issue_found:
@@ -15,6 +22,13 @@ def route_after_memory(state: StatusDiagnosticsState):
     return "llm"
 
 def route_after_port(state: StatusDiagnosticsState):
+    """
+    Routes the graph to exit if an issue with ports has been found.
+    Args:
+        state: The state of the graph.
+    Returns:
+        String corresponding to the next node to enter.
+    """
     port_issue_found = state.get("port_issue_found")
 
     if port_issue_found:
@@ -22,6 +36,12 @@ def route_after_port(state: StatusDiagnosticsState):
     return "memory"
 
 def build_status_diagnostics() -> CompiledStateGraph:
+    """
+    Subgraph to analyze issues on a deeper level. Runs deterministic checks first,
+    and routes to an LLM if an issue is not found through those.
+    Returns:
+        status_diagnostics graph.
+    """
 
     status_diagnostics = StateGraph(StatusDiagnosticsState, output_schema=StatusDiagnosticsStateOutput)
 

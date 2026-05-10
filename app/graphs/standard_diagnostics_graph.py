@@ -11,7 +11,7 @@ from app.state.graph_state import MainState
 def route_after_diagnostics(state):
     """
     Routes graph after analyzing diagnostics. If there are no issues found, prematurely exit the graph. Otherwise, continue.
-    Args: 
+    Args:
         state: The current state of the graph.
     Returns:
         string corresponding to the next action to take.
@@ -22,11 +22,11 @@ def route_after_diagnostics(state):
         return "terminate"
     else:
         return "continue"
-    
+
 def route_after_aggregation(state):
     """
     Routes graph after aggregating and deduplicating issues. If there are no issues found, prematurely exit the graph. Otherwise, continue.
-    Args: 
+    Args:
         state: The current state of the graph.
     Returns:
         string corresponding to the next action to take.
@@ -38,37 +38,39 @@ def route_after_aggregation(state):
     else:
         return "continue"
 
-def build_main_graph(checkpointer: BaseCheckpointSaver) -> CompiledStateGraph:
-    """Builds main graph for ticket generator.
-    Returns:
-        main_graph.
+def build_standard_diagnostics_graph(checkpointer: BaseCheckpointSaver) -> CompiledStateGraph:
     """
-    
-    main_graph = StateGraph(MainState)
+    Builds standard diagnostics graph for ticket generator.
+    This graph runs several high-level diagnostics and returns their results.
+    Returns:
+        standard_diagnostics_graph.
+    """
 
-    main_graph.add_node("collect_data_subgraph", build_collect_data())
-    main_graph.add_node("run_diagnostics_subgraph", build_run_diagnostics())
-    main_graph.add_node("deduplicate_subgraph", build_deduplicate())
-    main_graph.add_node("write_tickets_subgraph", build_write_tickets())
+    standard_diagnostics_graph = StateGraph(MainState)
 
-    main_graph.add_edge(START, "collect_data_subgraph")
-    main_graph.add_edge("collect_data_subgraph", "run_diagnostics_subgraph")
-    main_graph.add_conditional_edges("run_diagnostics_subgraph",
+    standard_diagnostics_graph.add_node("collect_data_subgraph", build_collect_data())
+    standard_diagnostics_graph.add_node("run_diagnostics_subgraph", build_run_diagnostics())
+    standard_diagnostics_graph.add_node("deduplicate_subgraph", build_deduplicate())
+    standard_diagnostics_graph.add_node("write_tickets_subgraph", build_write_tickets())
+
+    standard_diagnostics_graph.add_edge(START, "collect_data_subgraph")
+    standard_diagnostics_graph.add_edge("collect_data_subgraph", "run_diagnostics_subgraph")
+    standard_diagnostics_graph.add_conditional_edges("run_diagnostics_subgraph",
                                      route_after_diagnostics,
                                      {
                                          "continue": "deduplicate_subgraph",
                                          "terminate": END
                                      }
     )
-    main_graph.add_conditional_edges("deduplicate_subgraph",
+    standard_diagnostics_graph.add_conditional_edges("deduplicate_subgraph",
                                      route_after_aggregation,
                                      {
                                          "continue": "write_tickets_subgraph",
                                          "terminate": END
                                      }
     )
-    main_graph.add_edge("write_tickets_subgraph", END)
+    standard_diagnostics_graph.add_edge("write_tickets_subgraph", END)
 
-    graph = main_graph.compile(checkpointer=checkpointer)
+    graph = standard_diagnostics_graph.compile(checkpointer=checkpointer)
 
     return graph

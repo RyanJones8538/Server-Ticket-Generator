@@ -2,6 +2,14 @@ from app.state.graph_state import StatusCheckState
 
 
 def check_nginx_status(state: StatusCheckState) -> dict:
+    """
+    Checks the status of nginx on a server.
+    Args:
+        state: The state of the graph.
+    Returns:
+        raw_issues: Description of the issue and id of server containing it.
+        status: The status of the graph.
+    """
     server = state["server"]
     ideal = state["ideal"]
 

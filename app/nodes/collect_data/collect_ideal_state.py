@@ -5,7 +5,15 @@ from app.paths import CONFIG_PATH
 from app.state.graph_state import CollectState
 
 
-def build_retrieve_ideal_state(state: CollectState) -> dict:
+def retrieve_ideal_state(state: CollectState) -> dict:
+    """
+    Retrieves the ideal state of a server configuration from .json.
+    Args:
+        state: State of the graph
+    Returns:
+        status: Status of the graph.
+        ideal_state: Ideal State as a Python class.
+    """
     cluster_id = state["cluster_id"]
 
     with open(CONFIG_PATH) as f:

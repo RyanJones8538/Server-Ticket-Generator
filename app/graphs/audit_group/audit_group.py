@@ -10,6 +10,11 @@ from app.state.graph_state import AuditState
 
 
 def build_audit_graph(checkpointer: BaseCheckpointSaver) -> CompiledStateGraph:
+    """
+    Generates the audit graph, used to perform a search for issues outside standard diagnostics.
+    Callable with a prompt that can focus the search for more specific results,
+    or without a prompt to find issues that have not yet been considered.
+    """
     audit_graph = StateGraph(AuditState)
 
     audit_graph.add_node("evaluate_input_subgraph", build_evaluate_input())

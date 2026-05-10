@@ -2,7 +2,12 @@ from app.state.graph_state import StatusCheckState
 
 def check_expected_message(state: StatusCheckState) -> dict:
     """
-        Checks whether expected message matches ideal state.
+    Checks whether expected message matches ideal state.
+    Args:
+        state: The state of the graph.
+    Returns:
+        raw_issues: Description of the issue and id of server containing it.
+        status: The status of the graph.
     """
     ideal = state["ideal"]
     server = state["server"]

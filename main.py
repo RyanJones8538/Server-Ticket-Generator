@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from langchain_core.runnables import RunnableConfig
 from langgraph.checkpoint.memory import MemorySaver
 
-from app.graphs.main_graph import build_main_graph
+from app.graphs.standard_diagnostics_graph import build_standard_diagnostics_graph
 from app.graphs.audit_group.audit_group import build_audit_graph
 from app.state.graph_state import MainState, AuditState
 from app.models.models import IdealState, LLMDeduplicationResults, QueryJudgement
@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 def start_run(cluster_id: str) -> MainState:
     """
-    Starts run of Server Ticket Debugger via main_graph.
+    Starts run of Server Ticket Debugger via standard_diagnostics_graph.
     Returns:
         Final MainState after graph execution.
     """
@@ -53,7 +53,7 @@ def start_run(cluster_id: str) -> MainState:
     }
 
     checkpointer = MemorySaver()
-    graph = build_main_graph(checkpointer)
+    graph = build_standard_diagnostics_graph(checkpointer)
 
     logger.info("Invoking main graph for request_id: %s", request_id)
     final_state = cast(MainState, graph.invoke(initial_state, config))

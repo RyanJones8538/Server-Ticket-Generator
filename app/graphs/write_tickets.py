@@ -8,6 +8,8 @@ from app.state.graph_state import WriterState
 def dispatch_ticket_writer_by_issue(state: WriterState):
     """
     Dispatches the ticket writer for each approved ticket.
+    Returns:
+        List of generated tickets.
     """
     post_llm_filter_issues = state["post_llm_filter_issues"]
     targets = []
@@ -21,7 +23,8 @@ def dispatch_ticket_writer_by_issue(state: WriterState):
 
 
 def build_write_tickets() -> CompiledStateGraph:
-    """Builds writer graph for ticket generator.
+    """
+    Builds writer graph for ticket generator to generate helpdesk tickets based off provided issues.
     Returns:
         write_tickets graph.
     """
