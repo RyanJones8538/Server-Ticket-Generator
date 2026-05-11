@@ -16,6 +16,8 @@ from app.state.graph_state import SearchIssuesOutput, SearchIssuesState
 
 logger = logging.getLogger(__name__)
 
+MAX_TOOL_CALLS=5
+
 @tool
 def read_only_shell(command: str) -> str:
     """
@@ -75,7 +77,7 @@ def route_after_tools(state):
     """
     messages = state.get("messages", [])
     tool_call_count = sum(1 for m in messages if m.type == "tool")
-    if tool_call_count >= 5:
+    if tool_call_count >= MAX_TOOL_CALLS:
         return "issues_extractor"
     return "issues_agent"
     
@@ -153,7 +155,7 @@ def collect_server_diagnostics(server_ids: list[str], cluster_id: str) -> dict:
     """
     Retrieves server diagnostics.
     Args:
-        cluster_id: ID of cluster.R
+        cluster_id: ID of cluster.
         server_ids: List of relevant server_ids.
     Returns:
         data output
@@ -177,7 +179,7 @@ def collect_server_diagnostics(server_ids: list[str], cluster_id: str) -> dict:
 
         r = subprocess.run(["ls", "-la", f"/app/logs/{server_id}"], capture_output=True, text=True)
         if r.stdout:
-            entry["ls -la /var/log/nginx"] = r.stdout
+            entry[f"ls -la /app/logs/{server_id}"] = r.stdout
 
         try:
             resp = httpx.get(f"http://{server_id}/status", timeout=5.0)

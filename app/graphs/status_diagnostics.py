@@ -51,7 +51,7 @@ def build_status_diagnostics() -> CompiledStateGraph:
 
     status_diagnostics.add_node("check_port_binding", check_port_binding)
     status_diagnostics.add_node("check_memory_usage", check_memory_usage)
-    status_diagnostics.add_node("evaluate_server", make_evaluate_server(evaluate_server_llm()))
+    status_diagnostics.add_node("evaluate_server", make_evaluate_server(evaluate_server_llm))
 
     status_diagnostics.add_edge(START, "check_port_binding")
     status_diagnostics.add_conditional_edges("check_port_binding", route_after_port, 

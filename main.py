@@ -66,7 +66,7 @@ def start_run(cluster_id: str) -> MainState:
     return final_state
 
 
-def start_audit(cluster_id: str, query: str = "") -> AuditState:
+def start_audit(cluster_id: str, query: str = "", perform_deduplication: bool = False) -> AuditState:
     """
     Starts a cluster audit run via audit_group graph.
     Returns:
@@ -91,8 +91,12 @@ def start_audit(cluster_id: str, query: str = "") -> AuditState:
             expected_app_status="",
             expected_message="",
         ),
+        "perform_deduplication": perform_deduplication,
         "status": f"Initializing audit for Cluster {cluster_id}",
-        "issues": [],
+        "aggregated_issues": [],
+        "aggregated_issues_count": 0,
+        "post_llm_filter_issues": LLMDeduplicationResults(results=[]),
+        "post_llm_filter_issues_count": 0,
         "tickets_created": [],
     }
     config: RunnableConfig = {
@@ -106,8 +110,8 @@ def start_audit(cluster_id: str, query: str = "") -> AuditState:
     logger.info("Invoking audit graph for request_id: %s", request_id)
     final_state = cast(AuditState, graph.invoke(initial_state, config))
 
-    findings = final_state.get("findings", [])
-    logger.info("Audit complete. %d finding(s).", len(findings))
+    tickets = final_state.get("tickets_created", [])
+    logger.info("Audit complete. %d tickets created.", len(tickets))
 
     return final_state
 

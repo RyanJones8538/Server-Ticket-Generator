@@ -24,7 +24,7 @@ def make_evaluate_server(llm):
         server = state.get("server")
         cluster = state.get("cluster_id")
 
-        model = llm
+        model = llm()
 
         logger.info("Deterministic checks failed. Running LLM check. Cluster: %s, server: %s", cluster, server)
 

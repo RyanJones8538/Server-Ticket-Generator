@@ -15,7 +15,7 @@ def make_parse_query(llm):
     """
     def parse_query(state: ParseState):
         """
-        Parses the users's query for comprehensibility as a request, and for security purposes.
+        Parses the user's query for comprehensibility as a request, and for security purposes.
         Args:
             state: graph_state
         Returns: 
