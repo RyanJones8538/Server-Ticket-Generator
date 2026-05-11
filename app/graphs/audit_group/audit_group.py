@@ -1,3 +1,5 @@
+import logging
+
 from langgraph.checkpoint.base import BaseCheckpointSaver
 from langgraph.graph import END, START, StateGraph
 from langgraph.graph.state import CompiledStateGraph
@@ -8,6 +10,7 @@ from app.graphs.audit_group.write_audit_tickets import build_write_audit_tickets
 from app.graphs.collect_data import build_collect_data
 from app.state.graph_state import AuditState
 
+logger = logging.getLogger(__name__)
 
 def build_audit_graph(checkpointer: BaseCheckpointSaver) -> CompiledStateGraph:
     """

@@ -1,6 +1,9 @@
+import logging
+
 from app.models.models import DeduplicationEntry
 from rapidfuzz import fuzz
 
+logger = logging.getLogger(__name__)
 
 def deterministic_deduplicate(state: DeduplicationEntry) -> dict:
     """
@@ -18,6 +21,8 @@ def deterministic_deduplicate(state: DeduplicationEntry) -> dict:
 
     SIMILARITY_THRESHOLD = 85
 
+    logger.info("Starting deterministic deduplicate. Issue: %s", issue)
+
     scores = [
         (fuzz.token_set_ratio(issue, t.issue), t)
         for t in existing_tickets
@@ -31,6 +36,8 @@ def deterministic_deduplicate(state: DeduplicationEntry) -> dict:
 
     is_duplicate = bool(passing_scores)
     best_score = max(passing_scores, default=0.0)
+
+    logger.info("Deterministic deduplication finished. Is_duplicate: %s, best_score: %s", is_duplicate, best_score)
 
     if not is_duplicate:
         return {

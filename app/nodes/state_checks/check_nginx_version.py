@@ -1,6 +1,5 @@
 from app.state.graph_state import StatusCheckState
 
-
 def check_nginx_version(state: StatusCheckState) -> dict:
     """
     Checks the version of nginx on a server.

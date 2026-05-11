@@ -1,4 +1,5 @@
 import json
+import logging
 from uuid import uuid4
 
 from langgraph.graph import END, START, StateGraph
@@ -7,6 +8,7 @@ from langgraph.graph.state import CompiledStateGraph, Send
 from app.config import writer_llm
 from app.state.graph_state import AuditWriterState
 
+logger = logging.getLogger(__name__)
 
 def make_audit_ticket_writer(llm):
     def ticket_writer(state):

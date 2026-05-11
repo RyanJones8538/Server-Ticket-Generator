@@ -1,9 +1,13 @@
+import logging
+
 from langgraph.graph import END, START, StateGraph
 from langgraph.graph.state import CompiledStateGraph, Send
 
 from app.config import writer_llm
 from app.nodes.write_tickets.ticket_writer import make_ticket_writer
 from app.state.graph_state import WriterState
+
+logger = logging.getLogger(__name__)
 
 def dispatch_ticket_writer_by_issue(state: WriterState):
     """

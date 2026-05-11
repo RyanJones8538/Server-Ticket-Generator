@@ -1,6 +1,5 @@
 from app.state.graph_state import StatusCheckState
 
-
 def check_nginx_status(state: StatusCheckState) -> dict:
     """
     Checks the status of nginx on a server.

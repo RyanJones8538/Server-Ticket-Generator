@@ -1,3 +1,5 @@
+import logging
+
 from langgraph.checkpoint.base import BaseCheckpointSaver
 from langgraph.graph import END, START, StateGraph
 from langgraph.graph.state import CompiledStateGraph
@@ -7,6 +9,8 @@ from app.graphs.collect_data import build_collect_data
 from app.graphs.run_diagnostics import build_run_diagnostics
 from app.graphs.write_tickets import build_write_tickets
 from app.state.graph_state import MainState
+
+logger = logging.getLogger(__name__)
 
 def route_after_diagnostics(state):
     """

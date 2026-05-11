@@ -1,7 +1,10 @@
 import json
+import logging
 from uuid import uuid4
 
 from app.models.models import AggregatedIssue
+
+logger = logging.getLogger(__name__)
 
 def make_ticket_writer(llm):
     """
@@ -25,6 +28,8 @@ def make_ticket_writer(llm):
         cluster_id = state["cluster_id"]
         ticket_id = str(uuid4())
         affected_servers_json = json.dumps(affected_servers)
+
+        logger.info("Writing ticket. Issue: %s, affected servers: %s", issue, affected_servers)
 
         prompt = f"""
             You are a QA person writing tickets for issues affecting a server network.
@@ -58,6 +63,8 @@ def make_ticket_writer(llm):
             The output will be displayed in markdown; feel free to use it.
         """
         result = model.invoke(prompt)
+
+        logger.info("Ticket written. Ticket: %s", result)
 
         return {
             "tickets_created": [result],

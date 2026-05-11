@@ -1,3 +1,5 @@
+import logging
+
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_core.tools import tool
 import subprocess
@@ -10,6 +12,8 @@ from langgraph.prebuilt import ToolNode, tools_condition
 
 from app.config import ALLOWED_COMMANDS, SHELL_OPERATORS, get_llm, issue_extractor_llm
 from app.state.graph_state import SearchIssuesOutput, SearchIssuesState
+
+logger = logging.getLogger(__name__)
 
 @tool
 def read_only_shell(command: str) -> str:
@@ -88,7 +92,7 @@ EXTRACTOR_PROMPT = HumanMessage(
     "Each ticket must be anchored to a specific change in a specific file. "
     "Do not group two servers into one ticket unless the exact same misconfiguration appears in both their files. "
     "Different entrypoint scripts doing different things are always separate tickets. "
-    "Within the same entrypoint, multiple operations that combine toward a single harmful outcome are one ticket — report the ultimate consequence as the root cause, not each operation separately."
+    "Within the same entrypoint, multiple operations that combine toward a single harmful outcoRme are one ticket — report the ultimate consequence as the root cause, not each operation separately."
 )
 
 def make_issues_extractor(llm):
@@ -110,8 +114,10 @@ def make_issues_extractor(llm):
         """
         cluster_id = state["cluster_id"]
         messages = state["messages"]
+        logger.info("Extracting issues. Messages: %s", messages)
         result = model.invoke(messages + [EXTRACTOR_PROMPT])
         issues = [issue.model_copy(update={"cluster_id": cluster_id}) for issue in result.findings]
+        logger.info("Extracted results. Issues: %s", issues)
         return {"issues": issues}
     return issues_extractor
 
@@ -119,7 +125,7 @@ def collect_server_diagnostics(server_ids: list[str], cluster_id: str) -> dict:
     """
     Retrieves server diagnostics.
     Args:
-        cluster_id: ID of cluster.
+        cluster_id: ID of cluster.R
         server_ids: List of relevant server_ids.
     Returns:
         data output
@@ -182,6 +188,8 @@ def make_issues_agent(llm, tools):
         """
         messages = state.get("messages", [])
 
+        logger.info("Starting issues_agent. Messages: %s", len(messages))
+
         if not messages:
             query = state.get("query", "")
             cluster_id = state["cluster_id"]
@@ -218,12 +226,18 @@ def make_issues_agent(llm, tools):
                     """)
             messages = [system_message]
             response = llm_with_tools.invoke(messages)
+            
+            logger.info("Finished issues_agent iteration. Response: %s", response)
+
             return {
                 "messages": [system_message, response],
                 "status": "Searching for issues."
             }
 
         response = llm_with_tools.invoke(messages)
+
+        logger.info("Finished issues_agent iteration. Response: %s", response)
+
         return {
             "messages": [response],
             "status": "Searching for issues."

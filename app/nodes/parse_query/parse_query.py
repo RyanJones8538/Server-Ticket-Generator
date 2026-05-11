@@ -1,7 +1,9 @@
+import logging
 
 from app.models.models import QueryJudgement
 from app.state.graph_state import ParseState
 
+logger = logging.getLogger(__name__)
 
 def make_parse_query(llm):
     """
@@ -21,6 +23,8 @@ def make_parse_query(llm):
             status: The status of the graph.
         """
         query = state.get("query", "")
+
+        logger.info("Evaluating user-provided query. Query: %s", query)
 
         if query == "":
             result = QueryJudgement(is_valid=True, explanation="No Query Given")
@@ -52,6 +56,8 @@ def make_parse_query(llm):
                 """
         
         result = model.invoke(prompt)
+
+        logger.info("Query evaluated. Evaluation: %s", result)
 
         return {
             "query_judgement": result,

@@ -1,3 +1,5 @@
+import logging
+
 from langgraph.graph import END, START, StateGraph
 from langgraph.graph.state import CompiledStateGraph
 
@@ -6,6 +8,8 @@ from app.nodes.status_diagnostics.check_memory_usage import check_memory_usage
 from app.nodes.status_diagnostics.check_port_binding import check_port_binding
 from app.nodes.status_diagnostics.llm_diagnostics import make_evaluate_server
 from app.state.graph_state import StatusDiagnosticsState, StatusDiagnosticsStateOutput
+
+logger = logging.getLogger(__name__)
 
 def route_after_memory(state: StatusDiagnosticsState):
     """

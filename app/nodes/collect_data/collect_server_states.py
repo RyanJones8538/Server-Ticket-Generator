@@ -1,11 +1,12 @@
 import json
-
 import httpx
+import logging
 
 from app.models.models import NginxState, PortsState, ResourcesState, ServerDiagnosticsConfig, ServerState
 from app.paths import SERVERS_DIR
 from app.state.graph_state import CollectState
 
+logger = logging.getLogger(__name__)
 
 def collect_server_states(state: CollectState) -> dict:
     """
@@ -33,6 +34,7 @@ def collect_server_states(state: CollectState) -> dict:
             data = response.json()
             server_states[server_id] = ServerState(**data)
         except Exception:
+            logger.warning("Could not reach %s, falling back to file.", server_id)
             server_states[server_id] = ServerState(
                 server_id=server_id,
                 cluster=metadata["cluster"],
@@ -56,7 +58,7 @@ def collect_server_states(state: CollectState) -> dict:
                 )
 
             )
-
+    logger.info("Collected server states. Cluster ID: %s, server states: %s", cluster_id, server_states)
     return {
         "server_states": server_states,
         "status": "Retrieved server statuses.",

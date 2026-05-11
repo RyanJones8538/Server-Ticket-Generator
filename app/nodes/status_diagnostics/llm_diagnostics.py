@@ -1,6 +1,8 @@
-from app.models.models import QueryJudgement
+import logging
+
 from app.state.graph_state import StatusDiagnosticsState
 
+logger = logging.getLogger(__name__)
 
 def make_evaluate_server(llm):
     """
@@ -24,6 +26,8 @@ def make_evaluate_server(llm):
 
         model = llm
 
+        logger.info("Deterministic checks failed. Running LLM check. Cluster: %s, server: %s", cluster, server)
+
         prompt = f"""
                 You are a server diagnostics expert. Server {server.get("server_id")} of cluster {cluster} is reporting a degraded app_status.
                 Prior automated checks have already ruled out a closed app port and excessive memory usage as the cause.
@@ -36,6 +40,8 @@ def make_evaluate_server(llm):
                 """
         
         result = model.invoke(prompt)
+
+        logger.info("LLM diagnostic output: %s", result)
 
         if result.issue_found:
             return {

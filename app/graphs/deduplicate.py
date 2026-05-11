@@ -1,4 +1,5 @@
 import json
+import logging
 
 from langgraph.graph import END, START, StateGraph
 from langgraph.graph.state import CompiledStateGraph, Send
@@ -9,6 +10,8 @@ from app.nodes.deduplicate.deterministic_deduplicate import deterministic_dedupl
 from app.nodes.deduplicate.llm_deduplicate import make_llm_deduplicate
 from app.paths import TICKETS_PATH
 from app.state.graph_state import DeduplicateState
+
+logger = logging.getLogger(__name__)
 
 def dispatch_deterministic_deduplicate(state: DeduplicateState):
     existing_tickets = state["existing_tickets"]

@@ -1,6 +1,5 @@
 from app.state.graph_state import StatusCheckState
 
-
 def check_app_status(state: StatusCheckState) -> dict:
     """
     Checks the status of the app. 

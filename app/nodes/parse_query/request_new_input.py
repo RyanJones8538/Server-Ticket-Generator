@@ -1,7 +1,10 @@
+import logging
+
 from langgraph.types import interrupt
 
 from app.state.graph_state import ParseState
 
+logger = logging.getLogger(__name__)
 
 def request_new_input(state: ParseState):
     """
@@ -19,6 +22,8 @@ def request_new_input(state: ParseState):
             "message": query_judgement.explanation
         }
     )
+
+    logger.info("New query requested: %s", new_query)
 
     return {
         "query": new_query,

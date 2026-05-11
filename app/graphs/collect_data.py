@@ -1,3 +1,5 @@
+import logging
+
 from langgraph.graph import END, START, StateGraph
 from langgraph.graph.state import CompiledStateGraph
 
@@ -5,7 +7,7 @@ from app.nodes.collect_data.collect_ideal_state import retrieve_ideal_state
 from app.nodes.collect_data.collect_server_states import collect_server_states
 from app.state.graph_state import CollectState
 
-
+logger = logging.getLogger(__name__)
 
 def build_collect_data() -> CompiledStateGraph:
     """

@@ -1,7 +1,10 @@
 import json
+import logging
 
 from app.models.models import AggregatedIssue
 from app.state.graph_state import DiagnosticsState
+
+logger = logging.getLogger(__name__)
 
 def make_aggregate_issues(llm):
     """
@@ -25,6 +28,8 @@ def make_aggregate_issues(llm):
         cluster_id = state["cluster_id"]
 
         length = len(raw_issues)
+
+        logger.info("Aggregating identical issues. Number of issues: %s, issues: %s", length, raw_issues)
 
         if length == 0:
             return {
@@ -81,6 +86,8 @@ def make_aggregate_issues(llm):
 
 
         count = len(aggregated_issues)
+
+        logger.info("Aggregated discovered issues. Count: %s, issues found: %s", count, aggregated_issues)
         
         return {
             "status": "Aggregating issues.",

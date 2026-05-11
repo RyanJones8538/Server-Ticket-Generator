@@ -1,5 +1,8 @@
+import logging
+
 from app.state.graph_state import StatusDiagnosticsState
 
+logger = logging.getLogger(__name__)
 
 def check_memory_usage(state: StatusDiagnosticsState) -> dict:
     """

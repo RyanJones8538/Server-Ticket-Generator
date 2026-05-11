@@ -19,8 +19,6 @@ def check_expected_message(state: StatusCheckState) -> dict:
                 f'Expected message: {ideal["expected_message"]}, actual message: {server["message"]}.': [server["server_id"]]
             }
         }
-
-
     return {
         "status": "Checking expected message."
     }

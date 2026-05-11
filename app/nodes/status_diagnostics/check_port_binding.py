@@ -1,6 +1,5 @@
 from app.state.graph_state import StatusDiagnosticsState
 
-
 def check_port_binding(state: StatusDiagnosticsState) -> dict:
     """
     Checks the port binding on a server.

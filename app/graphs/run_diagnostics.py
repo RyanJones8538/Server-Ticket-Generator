@@ -1,3 +1,5 @@
+import logging
+
 from langgraph.graph import END, START, StateGraph
 from langgraph.graph.state import CompiledStateGraph, Send
 
@@ -6,6 +8,8 @@ from app.graphs.status_checks import build_status_checks
 from app.graphs.status_diagnostics import build_status_diagnostics
 from app.nodes.run_diagnostics.aggregate import make_aggregate_issues
 from app.state.graph_state import DiagnosticsState
+
+logger = logging.getLogger(__name__)
 
 def dispatch_status_checks_by_server(state: DiagnosticsState):
     """

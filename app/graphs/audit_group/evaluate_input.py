@@ -1,3 +1,5 @@
+import logging
+
 from langgraph.graph import END, START, StateGraph
 from langgraph.graph.state import CompiledStateGraph
 
@@ -5,7 +7,6 @@ from app.config import parse_llm
 from app.nodes.parse_query.request_new_input import request_new_input
 from app.nodes.parse_query.parse_query import make_parse_query
 from app.state.graph_state import ParseState
-
 
 def route_query(state):
     """

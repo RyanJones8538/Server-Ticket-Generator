@@ -1,3 +1,5 @@
+import logging
+
 from langgraph.graph import END, START, StateGraph
 from langgraph.graph.state import CompiledStateGraph
 
@@ -8,7 +10,7 @@ from app.nodes.state_checks.check_expected_message import check_expected_message
 
 from app.state.graph_state import StatusCheckState, StatusCheckStateOutput
 
-
+logger = logging.getLogger(__name__)
 
 def build_status_checks() -> CompiledStateGraph:
     """
