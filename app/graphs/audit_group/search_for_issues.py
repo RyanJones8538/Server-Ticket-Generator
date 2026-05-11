@@ -11,6 +11,7 @@ from langgraph.graph import END, START, StateGraph
 from langgraph.prebuilt import ToolNode, tools_condition
 
 from app.config import ALLOWED_COMMANDS, SHELL_OPERATORS, get_llm, issue_extractor_llm
+from app.models.models import AggregatedIssue
 from app.state.graph_state import SearchIssuesOutput, SearchIssuesState
 
 logger = logging.getLogger(__name__)
@@ -78,7 +79,7 @@ def route_after_tools(state):
         return "issues_extractor"
     return "issues_agent"
     
-EXTRACTOR_PROMPT = HumanMessage(
+_EXTRACTOR_BASE = (
     "Using only the diagnostic snapshot in the system message above — the entrypoint scripts, "
     "nginx config files, and HTTP responses — extract every distinct net harm. "
     "For each issue describe the ROOT CAUSE: what is in the entrypoint script or config file "
@@ -92,8 +93,22 @@ EXTRACTOR_PROMPT = HumanMessage(
     "Each ticket must be anchored to a specific change in a specific file. "
     "Do not group two servers into one ticket unless the exact same misconfiguration appears in both their files. "
     "Different entrypoint scripts doing different things are always separate tickets. "
-    "Within the same entrypoint, multiple operations that combine toward a single harmful outcoRme are one ticket — report the ultimate consequence as the root cause, not each operation separately."
+    "Within the same entrypoint, multiple operations that combine toward a single harmful outcome are one ticket — report the ultimate consequence as the root cause, not each operation separately."
 )
+
+def make_extractor_prompt(query: str) -> HumanMessage:
+    if not query:
+        return HumanMessage(_EXTRACTOR_BASE)
+    return HumanMessage(
+        _EXTRACTOR_BASE +
+        f"\n\nCRITICAL FILTER — QUERY IN EFFECT: \"{query}\"\n"
+        "1. Only extract findings that directly explain what the query describes. "
+        "Discard any finding that is not clearly relevant to the query.\n"
+        "2. Find the PROXIMATE cause: the specific script operation or config line that directly produces the symptom in the query. "
+        "Do not report a background condition (e.g. a missing service) as the root cause if there is a more direct operation responsible.\n"
+        "3. The grouping rule ('multiple operations that combine toward a single harmful outcome are one ticket') does NOT apply here. "
+        "When a query is active, report each distinct mechanism separately, even if they contribute to the same surface symptom."
+    )
 
 def make_issues_extractor(llm):
     """
@@ -113,12 +128,25 @@ def make_issues_extractor(llm):
             issues: List of issues discovered.
         """
         cluster_id = state["cluster_id"]
+        query = state.get("query", "")
         messages = state["messages"]
         logger.info("Extracting issues. Messages: %s", messages)
-        result = model.invoke(messages + [EXTRACTOR_PROMPT])
-        issues = [issue.model_copy(update={"cluster_id": cluster_id}) for issue in result.findings]
-        logger.info("Extracted results. Issues: %s", issues)
-        return {"issues": issues}
+        result = model.invoke(messages + [make_extractor_prompt(query)])
+        aggregated_issues = [
+            AggregatedIssue(
+                cluster_id=cluster_id,
+                issue=issue.issue,
+                affected_servers=issue.affected_servers,
+                similarity=0
+            )
+            for issue in result.findings
+        ]
+        logger.info("Extracted results. Issues: %s", aggregated_issues)
+        return {
+            "aggregated_issues": aggregated_issues,
+            "aggregated_issues_count": len(aggregated_issues),
+            "status": "Extracted issues from LLM output."
+        }
     return issues_extractor
 
 def collect_server_diagnostics(server_ids: list[str], cluster_id: str) -> dict:
@@ -197,12 +225,24 @@ def make_issues_agent(llm, tools):
             ideal_state = state["ideal_state"]
             diagnostics = collect_server_diagnostics(list(server_states.keys()), cluster_id)
 
+            scope_section = (
+                "## Investigation Scope\n"
+                "Perform a general audit covering all common failure modes."
+                if not query else
+                f"## Investigation Scope — STRICT CONSTRAINT\n"
+                f"Your investigation is strictly limited to: \"{query}\".\n"
+                f"Do NOT investigate, analyse, or report any issue outside this scope, even if it appears significant.\n"
+                f"When the query describes a symptom (e.g. a file filling up, errors appearing), "
+                f"trace it to the most PROXIMATE cause: the specific script line or operation that directly produces the symptom. "
+                f"A background condition that merely enables the symptom (e.g. a missing service) is not the finding — "
+                f"the operation that actively triggers the symptom is."
+            )
             system_message = SystemMessage(f"""You are a systems reliability engineer auditing the servers of cluster {cluster_id}.
+
+                    {scope_section}
 
                     Server states (from the monitoring system): {server_states}
                     Ideal configuration: {ideal_state}
-
-                    {"Perform a general audit covering all common failure modes." if query == "" else f"Focus your investigation on: {query}"}
 
                     ## Pre-collected diagnostic snapshot
 

@@ -153,6 +153,27 @@ button.btn-running { background: var(--amber); }
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
+/* Audit option checkbox */
+.audit-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--muted);
+  font-size: 12px;
+  cursor: pointer;
+  user-select: none;
+  margin-bottom: 2rem;
+}
+.audit-option input[type="checkbox"] {
+  accent-color: var(--blue);
+  width: 13px;
+  height: 13px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.audit-option:has(input:disabled) { opacity: 0.5; cursor: not-allowed; }
+.audit-option input[type="checkbox"]:disabled { cursor: not-allowed; }
+
 /* Metrics */
 .metrics {
   display: grid;

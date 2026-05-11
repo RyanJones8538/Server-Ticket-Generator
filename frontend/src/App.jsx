@@ -199,6 +199,7 @@ function ClusterAuditTab() {
   const [complete, setComplete] = useState(false)
   const [error, setError] = useState(null)
   const [queryExplanation, setQueryExplanation] = useState(null)
+  const [deduplicateResults, setDeduplicateResults] = useState(false)
 
   const handleEvent = (event) => {
     switch (event.type) {
@@ -235,7 +236,7 @@ function ClusterAuditTab() {
       const res = await fetch(`${API}/audit`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ cluster_id: cluster, query: query.trim() }),
+        body: JSON.stringify({ cluster_id: cluster, query: query.trim(), perform_deduplication: deduplicateResults }),
       })
       if (!res.ok) throw new Error(`Server returned HTTP ${res.status}`)
       await streamSSE(res, handleEvent)
@@ -269,6 +270,16 @@ function ClusterAuditTab() {
           rows={3}
         />
       </div>
+
+      <label className="audit-option">
+        <input
+          type="checkbox"
+          checked={deduplicateResults}
+          onChange={e => setDeduplicateResults(e.target.checked)}
+          disabled={running}
+        />
+        Deduplicate audit results against active helpdesk tickets
+      </label>
 
       {queryExplanation && (
         <div className="query-assessment">

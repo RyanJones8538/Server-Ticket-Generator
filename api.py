@@ -42,6 +42,7 @@ class RunRequest(BaseModel):
 class AuditRequest(BaseModel):
     cluster_id: str
     query: str = ""
+    perform_deduplication: bool = False
 
 
 def make_serializable(obj):
@@ -156,7 +157,7 @@ async def run_stream(cluster_id: str) -> AsyncGenerator[str, None]:
 @app.post("/audit")
 async def audit_endpoint(request: AuditRequest):
     return StreamingResponse(
-        audit_stream(request.cluster_id, request.query),
+        audit_stream(request.cluster_id, request.query, request.perform_deduplication),
         media_type="text/event-stream",
         headers={
             "Cache-Control": "no-cache",
@@ -166,7 +167,7 @@ async def audit_endpoint(request: AuditRequest):
     )
 
 
-async def audit_stream(cluster_id: str, query: str) -> AsyncGenerator[str, None]:
+async def audit_stream(cluster_id: str, query: str, perform_deduplication: bool) -> AsyncGenerator[str, None]:
     loop = asyncio.get_event_loop()
     queue: asyncio.Queue = asyncio.Queue()
 
@@ -192,8 +193,12 @@ async def audit_stream(cluster_id: str, query: str) -> AsyncGenerator[str, None]
                     expected_app_status="",
                     expected_message="",
                 ),
+                "perform_deduplication": perform_deduplication,
+                "aggregated_issues_count": 0,
+                "aggregated_issues": [],
+                "post_llm_filter_issues_count": 0,
+                "post_llm_filter_issues": LLMDeduplicationResults(results=[]),
                 "status": f"Initializing audit for Cluster {cluster_id}",
-                "issues": [],
                 "tickets_created": [],
             }
             config: RunnableConfig = {
@@ -214,7 +219,7 @@ async def audit_stream(cluster_id: str, query: str) -> AsyncGenerator[str, None]
                 if val != prev_status:
                     prev_status = val
                     update["status"] = val
-                issues_count = len(state.get("issues", []))
+                issues_count = state.get("aggregated_issues_count", 0)
                 if issues_count != prev_issues_count:
                     prev_issues_count = issues_count
                     update["issues_count"] = issues_count

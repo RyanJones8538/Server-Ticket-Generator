@@ -41,6 +41,7 @@ class DeduplicateState(TypedDict):
     request_id: str
     cluster_id: str
     status: Annotated[str, lambda _, b: b]
+    perform_deduplication: bool
     aggregated_issues_count: int
     aggregated_issues: list[AggregatedIssue]
     existing_tickets: list[TicketOutput]
@@ -78,9 +79,13 @@ class AuditState(TypedDict):
     query_judgement: Optional[QueryJudgement]
     server_states: Annotated[dict[str, ServerState], operator.or_]
     ideal_state: IdealState
-    issues: list[IssueLLMOutput]
+    perform_deduplication: bool
+    aggregated_issues_count: int
+    aggregated_issues: list[AggregatedIssue]
+    post_llm_filter_issues_count: int
+    post_llm_filter_issues: LLMDeduplicationResults
     status: str
-    tickets_created: list[TicketOutput]
+    tickets_created: Annotated[list[TicketOutput], operator.add]
 
 class SearchIssuesState(TypedDict):
     request_id: str
@@ -89,11 +94,12 @@ class SearchIssuesState(TypedDict):
     server_states: dict[str, ServerState]
     ideal_state: IdealState
     messages: Annotated[list, add_messages]
-    issues: list[IssueLLMOutput]
+    issues: list[AggregatedIssue]
     status: str
 
 class SearchIssuesOutput(TypedDict):
-    issues: list[IssueLLMOutput]
+    aggregated_issues: list[AggregatedIssue]
+    aggregated_issues_count: int
     status: str
 
 class AuditWriterState(TypedDict):

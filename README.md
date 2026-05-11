@@ -119,7 +119,7 @@ flowchart TD
         S1 -->|done| S3
     end
 
-    subgraph WRITE["write_audit_tickets"]
+    subgraph WRITE["write_tickets"]
         W_DISPATCH[/"dispatch per issue"/] --> W1[ticket_writer]
     end
 
@@ -135,7 +135,7 @@ flowchart TD
 | `evaluate_input` | Parses the natural-language query with an LLM; loops on `request_new_input` until the query is valid |
 | `collect_data` | Same as the run workflow |
 | `search_for_issues` | ReAct agent with `read_only_shell` and `http_probe` tools; capped at 5 tool calls, then hands off to `issues_extractor` |
-| `write_audit_tickets` | Dispatches one ticket per confirmed finding |
+| `write_tickets` | Dispatches one ticket per confirmed finding |
 
 ---
 
