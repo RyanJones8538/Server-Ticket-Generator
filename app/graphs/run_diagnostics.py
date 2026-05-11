@@ -83,7 +83,7 @@ def build_run_diagnostics() -> CompiledStateGraph:
 
     diagnostics_graph.add_node("status_checks_subgraph", build_status_checks())
     diagnostics_graph.add_node("status_diagnostics_subgraph", build_status_diagnostics())
-    diagnostics_graph.add_node("aggregate_issues", make_aggregate_issues(aggregate_llm()))
+    diagnostics_graph.add_node("aggregate_issues", make_aggregate_issues(aggregate_llm))
 
     diagnostics_graph.add_conditional_edges(START, dispatch_status_checks_by_server)
     diagnostics_graph.add_conditional_edges("status_checks_subgraph", dispatch_status_diagnostics_by_server,

@@ -32,5 +32,5 @@ def retrieve_ideal_state(state: CollectState) -> dict:
 
     return {
         "ideal_state": ideal_state,
-        "status": "Collected ideal state"
+        "status": "Collected ideal state."
     }

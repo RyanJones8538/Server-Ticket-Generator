@@ -10,7 +10,7 @@ def make_llm_deduplicate(llm):
     """
     Wrapper function for llm deduplication.
     Args: 
-        get_llm: LLM with AggregatedIssue structured output.
+        llm: LLM with LLMDeduplicationResults structured output.
     Returns:
         llm_deduplicate node.
     """

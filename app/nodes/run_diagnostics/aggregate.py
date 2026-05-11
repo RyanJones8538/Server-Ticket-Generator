@@ -21,8 +21,8 @@ def make_aggregate_issues(llm):
             state: The current state of the graph
         Returns:
             status: Status of the process
-            aggregate_issues_count: Number of separate issues discovered.
-            aggregate_issues: List of issues with affected servers.
+            aggregated_issues_count: Number of separate issues discovered.
+            aggregated_issues: List of issues with affected servers.
         """
         raw_issues = state["raw_issues"]
         cluster_id = state["cluster_id"]
@@ -70,7 +70,9 @@ def make_aggregate_issues(llm):
             Return the full list of issues after applying these rules.
             """
 
-        result = llm.invoke(prompt)
+        model = llm()
+
+        result = model.invoke(prompt)
 
         merged_issues = result.merged_issues
 

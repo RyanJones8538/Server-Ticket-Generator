@@ -35,7 +35,7 @@ def route_after_aggregation(state):
     Returns:
         string corresponding to the next action to take.
     """
-    post_filter_issues_count = state["post_deterministic_filter_issues_count"]
+    post_filter_issues_count = state["post_llm_filter_issues_count"]
 
     if post_filter_issues_count == 0:
         return "terminate"

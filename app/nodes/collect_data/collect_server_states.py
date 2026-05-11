@@ -11,8 +11,7 @@ logger = logging.getLogger(__name__)
 def collect_server_states(state: CollectState) -> dict:
     """
     Collects states from servers, calling the actual server if possible, or reading from the file if not.
-    I read from the file because Cluster D involves excessive memory and CPU usage,
-    which I would prefer to not run on my computer.
+    The file exists to simulate Cluster D, which involves excessive memory and CPU usage that would be undesireable to run on a computer.
     Args:
         state: The state of the graph.
     Returns:
