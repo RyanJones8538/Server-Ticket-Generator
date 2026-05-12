@@ -1,0 +1,23 @@
+clusters:
+  A:
+    servers:
+      - server_id: server-a1
+      - server_id: server-a2
+      - server_id: server-a3
+  B:
+    servers:
+      - server_id: server-b1
+      - server_id: server-b2
+      - server_id: server-b3
+  C:
+    servers:
+      - server_id: server-c1
+      - server_id: server-c2
+      - server_id: server-c3
+      - server_id: server-c4
+  D:
+    mode: file
+    servers:
+      - server_id: server-d1
+      - server_id: server-d2
+      - server_id: server-d3
